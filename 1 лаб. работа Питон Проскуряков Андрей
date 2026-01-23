@@ -1,0 +1,39 @@
+my_list = [3, 7, 2, 7, 9, 2, 1, 7, 5, 8]
+
+print("1. исходный список:")
+print(my_list)
+
+print("\n2. предпосл элемент:", my_list[-2])
+
+print ("\n3. элементы по индексам 0, 3 и 7:")
+print("my_list[0] =", my_list[0])
+print("my_list[3] =", my_list[3])
+print("my_list[7] =", my_list[7])
+
+my_list[4] = 99
+print("\n4. список после изменения элемента с индексом 4:")
+print(my_list)
+
+
+("\n5. элементы с индексами с 3 по 7 (не включая 7):")
+print(my_list[3:7])
+
+
+my_list.append(42)
+print("\n6. список после добавления элемента в конец:")
+print(my_list)
+
+mid_index = len(my_list) // 2
+my_list.insert(mid_index, 777)
+print("\n7. список после добавления элемента в середину (позиция", mid_index, "):")
+print(my_list)
+
+count_7 = my_list.count(7)
+print("\n8. Количество элементов со значением 7:", count_7)
+
+copied_list = my_list.copy()
+copied_list[0] = 1000
+print("\n9. сравнение оригинального и изменённого скопированного списка:")
+print("Оригинальный список:", my_list)
+print("Скопированный список с изменённым первым элементом:", copied_list)
+print("Равны ли списки?", my_list == 
