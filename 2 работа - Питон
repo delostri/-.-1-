@@ -1,0 +1,144 @@
+using System;
+
+namespace TransportExample
+{
+    // Родительский класс для всех транспортных средств
+    public class Vehicle
+    {
+        // Общие свойства для всех транспортных средств
+        public string Brand { get; set; }    // Марка транспортного средства
+        public string Model { get; set; }    // Модель транспортного средства
+        public int Year { get; set; }        // Год выпуска
+        
+        // Конструктор базового класса
+        // При создании объекта данные передаются в этот конструктор
+        public Vehicle(string brand, string model, int year)
+        {
+            Brand = brand;  // Сохраняем переданную марку
+            Model = model;  // Сохраняем переданную модель
+            Year = year;    // Сохраняем переданный год выпуска
+            Console.WriteLine("Данные переданы в конструктор Vehicle");
+        }
+        
+        // Общий метод для всех транспортных средств
+        public void DisplayInfo()
+        {
+            Console.WriteLine("Марка: " + Brand + ", Модель: " + Model + ", Год: " + Year);
+        }
+    }
+    
+    // Класс Car наследует все свойства и методы от Vehicle
+    public class Car : Vehicle
+    {
+        // Уникальные свойства только для автомобилей
+        public int DoorsCount { get; set; }  // Количество дверей
+        public string BodyType { get; set; } // Тип кузова
+        
+        // Конструктор класса Car
+        // base(brand, model, year) - передача данных в конструктор родительского класса Vehicle
+        public Car(string brand, string model, int year, int doorsCount, string bodyType)
+            : base(brand, model, year)  // ← ПЕРЕДАЧА ДАННЫХ В КОНСТРУКТОР VEHICLE
+        {
+            DoorsCount = doorsCount;  // Сохраняем уникальное свойство
+            BodyType = bodyType;      // Сохраняем уникальное свойство
+            Console.WriteLine("Данные переданы в конструктор Car");
+        }
+        
+        // Уникальный метод только для автомобилей
+        public void StartEngine()
+        {
+            Console.WriteLine("Автомобиль " + Brand + " " + Model + " завелся");
+        }
+    }
+    
+    // Класс Bicycle также наследует от Vehicle
+    public class Bicycle : Vehicle
+    {
+        // Уникальные свойства только для велосипедов
+        public string BicycleType { get; set; }  // Тип велосипеда
+        public int GearsCount { get; set; }      // Количество передач
+        
+        // Конструктор класса Bicycle
+        public Bicycle(string brand, string model, int year, string bicycleType, int gearsCount)
+            : base(brand, model, year)  // ← ПЕРЕДАЧА ДАННЫХ В КОНСТРУКТОР VEHICLE
+        {
+            BicycleType = bicycleType;  // Сохраняем уникальное свойство
+            GearsCount = gearsCount;    // Сохраняем уникальное свойство
+            Console.WriteLine("Данные переданы в конструктор Bicycle");
+        }
+        
+        // Уникальный метод только для велосипедов
+        public void RingBell()
+        {
+            Console.WriteLine("Велосипед " + Brand + " " + Model + " звенит звонком");
+        }
+    }
+    
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("=== ПРОГРАММА ДЛЯ ДЕМОНСТРАЦИИ НАСЛЕДОВАНИЯ ===\n");
+            
+            // СОЗДАНИЕ ОБЪЕКТОВ:
+            // 1. Создаем объект Car - данные передаются в конструктор Car
+            Console.WriteLine("1. СОЗДАНИЕ АВТОМОБИЛЯ:");
+            Car myCar = new Car("Toyota", "Camry", 2022, 4, "Седан");
+            /* 
+               ПЕРЕДАЧА ДАННЫХ:
+               1. Данные передаются в конструктор Car: "Toyota", "Camry", 2022, 4, "Седан"
+               2. Конструктор Car через base(...) передает первые 3 параметра в конструктор Vehicle
+               3. Конструктор Vehicle сохраняет: Brand="Toyota", Model="Camry", Year=2022
+
+4. Конструктор Car сохраняет: DoorsCount=4, BodyType="Седан"
+            */
+            
+            Console.WriteLine("\n2. СОЗДАНИЕ ВЕЛОСИПЕДА:");
+            // 2. Создаем объект Bicycle - данные передаются в конструктор Bicycle
+            Bicycle myBicycle = new Bicycle("Giant", "Escape 3", 2023, "Городской", 21);
+            /* 
+               ПЕРЕДАЧА ДАННЫХ:
+               1. Данные передаются в конструктор Bicycle: "Giant", "Escape 3", 2023, "Городской", 21
+               2. Конструктор Bicycle через base(...) передает первые 3 параметра в конструктор Vehicle
+               3. Конструктор Vehicle сохраняет: Brand="Giant", Model="Escape 3", Year=2023
+               4. Конструктор Bicycle сохраняет: BicycleType="Городской", GearsCount=21
+            */
+            
+            // 3. Создаем объект базового класса Vehicle
+            Console.WriteLine("\n3. СОЗДАНИЕ БАЗОВОГО ТРАНСПОРТНОГО СРЕДСТВА:");
+            Vehicle genericVehicle = new Vehicle("General", "Model X", 2020);
+            
+            Console.WriteLine("\n=== использование обьектов ===");
+            
+            // ИСПОЛЬЗОВАНИЕ МЕТОДОВ:
+            
+            // Автомобиль использует наследованные методы + свои уникальные
+            Console.WriteLine("\nАВТОМОБИЛЬ:");
+            myCar.DisplayInfo();  // Наследованный метод из Vehicle
+            Console.WriteLine("Количество дверей: " + myCar.DoorsCount + ", Тип кузова: " + myCar.BodyType);
+            myCar.StartEngine();  // Уникальный метод Car
+            
+            // Велосипед использует наследованные методы + свои уникальные
+            Console.WriteLine("\nВЕЛОСИПЕД:");
+            myBicycle.DisplayInfo();  // Наследованный метод из Vehicle
+            Console.WriteLine("Тип велосипеда: " + myBicycle.BicycleType + 
+                              ", Количество передач: " + myBicycle.GearsCount);
+            myBicycle.RingBell();  // Уникальный метод Bicycle
+            
+            // Базовое транспортное средство использует только свои методы
+            Console.WriteLine("\nБАЗОВОЕ ТРАНСПОРТНОЕ СРЕДСТВО:");
+            genericVehicle.DisplayInfo();  // Метод из Vehicle
+            
+            // Демонстрация полиморфизма: Vehicle может ссылаться на Car или Bicycle
+            Console.WriteLine("\n=== ДЕМОНСТРАЦИЯ ПОЛИМОРФИЗМА ===");
+            Vehicle vehicle1 = myCar;  // Vehicle ссылается на Car
+            Vehicle vehicle2 = myBicycle;  // Vehicle ссылается на Bicycle
+            
+            Console.WriteLine("\nVehicle ссылается на Car:");
+            vehicle1.DisplayInfo();  // Вызовется DisplayInfo() из Vehicle
+            
+            Console.WriteLine("\nVehicle ссылается на Bicycle:");
+            vehicle2.DisplayInfo();  // Вызовется DisplayInfo() из Vehicle
+        }
+    }
+}
