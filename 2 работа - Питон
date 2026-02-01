@@ -1,0 +1,46 @@
+class Device:
+    def init(self, brand, model, year, price):
+        # данные передаются при создании экземпляра класса
+        self.brand = brand      # Бренд устройства
+        self.model = model      # Модель устройства
+        self.year = year        # Год выпуска
+        self.price = price      # Стоимость
+
+    def display_info(self):
+        # метод выводит общую информацию об устройстве
+        print(f"Бренд: {self.brand}")
+        print(f"Модель: {self.model}")
+        print(f"Год выпуска: {self.year}")
+        print(f"Стоимость: {self.price} руб")
+
+
+class Smartphone(Device):
+    def init(self, brand, model, year, price, os, ram):
+        # super() вызывает конструктор родительского класса Device
+        # данные передаются из Smartphone в Device
+        super().init(brand, model, year, price)
+        # добавляем уникальные свойства
+        self.os = os            # Операционная система
+        self.ram = ram          # Объем оперативной памяти
+
+
+
+class Tablet(Device):
+    def init(self, brand, model, year, price, screen_size, has_pen):
+        # super() передает данные в родительский конструктор
+        super().init(brand, model, year, price)
+        # Добавляем уникальные свойства
+        self.screen_size = screen_size  # Диагональ экрана
+        self.has_pen = has_pen          # Поддержка стилуса
+
+
+# создание экземпляров классов
+# данные передаются в конструкторы классов
+smartphone = Smartphone("Samsung", "Galaxy S24", 2024, 89990, "Android", "12 ГБ")
+tablet = Tablet("Apple", "iPad Pro", 2023, 119990, "12.9 дюймов", True)
+
+# вывод информации об устройствах
+# метод display_info() вызывается из родительского класса Device
+smartphone.display_info()
+print()  # Пустая строка для разделения
+tablet.display_info()
