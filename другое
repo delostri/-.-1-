@@ -6,10 +6,10 @@ class Device:
         self.price = price
     
     def display_info(self):
-        print(f"\nБренд: {self.brand}")
-        print(f"Модель: {self.model}")
-        print(f"Год выпуска: {self.year}")
-        print(f"Стоимость: {self.price} руб")
+        print(f"\nбренд: {self.brand}")
+        print(f"модель: {self.model}")
+        print(f"год выпуска: {self.year}")
+        print(f"стоимость: {self.price} руб")
 
 
 class Smartphone(Device):
@@ -20,8 +20,8 @@ class Smartphone(Device):
     
     def display_info(self):
         super().display_info()
-        print(f"Операционная система: {self.os}")
-        print(f"Оперативная память: {self.ram}")
+        print(f"операционная система: {self.os}")
+        print(f"оперативная память: {self.ram}")
         print("-" * 30)
 
 
@@ -33,49 +33,47 @@ class Tablet(Device):
     
     def display_info(self):
         super().display_info()
-        print(f"Размер экрана: {self.screen_size}")
+        print(f"размер экрана: {self.screen_size}")
         pen_text = "Да" if self.has_pen else "Нет"
-        print(f"Поддержка стилуса: {pen_text}")
+        print(f"поддержка стилуса: {pen_text}")
         print("-" * 30)
 
 
-# Очень простая функция для взаимодействия
 def add_device():
-    """Простая функция для добавления устройства"""
-    print("\nВыберите тип устройства:")
-    print("1. Смартфон")
-    print("2. Планшет")
+    print("\nвыберите тип устройства:")
+    print("1. смартфон")
+    print("2. планшет")
     
-    choice = input("Ваш выбор (1 или 2): ")
+    choice = input("выберите действие (1 или 2): ")
     
     if choice == "1":
-        print("\nВведите данные смартфона:")
+        print("\nвведите данные смартфона:")
         device = Smartphone(
-            brand=input("Бренд: "),
-            model=input("Модель: "),
-            year=int(input("Год выпуска: ")),
-            price=int(input("Стоимость: ")),
-            os=input("Операционная система: "),
-            ram=input("Оперативная память: ")
+            brand=input("бренд: "),
+            model=input("модель: "),
+            year=int(input("год выпуска: ")),
+            price=int(input("стоимость: ")),
+            os=input("операционная система: "),
+            ram=input("оперативная память: ")
         )
     elif choice == "2":
-        print("\nВведите данные планшета:")
+        print("\nвведите данные планшета:")
         device = Tablet(
-            brand=input("Бренд: "),
+            brand=input("бренд: "),
             model=input("Модель: "),
-            year=int(input("Год выпуска: ")),
-            price=int(input("Стоимость: ")),
-            screen_size=input("Размер экрана: "),
-            has_pen=input("Поддержка стилуса (да/нет): ").lower() == "да"
+            year=int(input("год выпуска: ")),
+            price=int(input("стоимость: ")),
+            screen_size=input("размер экрана: "),
+            has_pen=input("поддержка стилуса (да/нет): ").lower() == "да"
         )
     else:
-        print("Неверный выбор!")
+        print("неверный выбор!")
         return
     
     print("\n" + "=" * 30)
-    print("Ваше устройство:")
+    print("ваше устройство:")
     device.display_info()
 
 
-# Использование функции
+
 add_device()
