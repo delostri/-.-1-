@@ -1,144 +1,97 @@
 using System;
 
-namespace TransportExample
+namespace transportexample
 {
-    // Родительский класс для всех транспортных средств
-    public class Vehicle
+    // базовый класс: содержит общие свойства для всех транспортных средств
+    public class vehicle
     {
-        // Общие свойства для всех транспортных средств
-        public string Brand { get; set; }    // Марка транспортного средства
-        public string Model { get; set; }    // Модель транспортного средства
-        public int Year { get; set; }        // Год выпуска
+        public string brand { get; set; }    // марка транспортного средства
+        public string model { get; set; }    // модель транспортного средства
+        public int year { get; set; }        // год выпуска
         
-        // Конструктор базового класса
-        // При создании объекта данные передаются в этот конструктор
-        public Vehicle(string brand, string model, int year)
+        // конструктор: получает данные при создании объекта
+        public vehicle(string brand, string model, int year)
         {
-            Brand = brand;  // Сохраняем переданную марку
-            Model = model;  // Сохраняем переданную модель
-            Year = year;    // Сохраняем переданный год выпуска
-            Console.WriteLine("Данные переданы в конструктор Vehicle");
+            this.brand = brand;    // сохраняем марку
+            this.model = model;    // сохраняем модель
+            this.year = year;      // сохраняем год выпуска
         }
         
-        // Общий метод для всех транспортных средств
-        public void DisplayInfo()
+        // метод для вывода основной информации
+        public void displayinfo()
         {
-            Console.WriteLine("Марка: " + Brand + ", Модель: " + Model + ", Год: " + Year);
+            console.writeline("марка: " + brand + ", модель: " + model + ", год: " + year);
         }
     }
     
-    // Класс Car наследует все свойства и методы от Vehicle
-    public class Car : Vehicle
+    // подкласс 1: car наследует все от vehicle и добавляет свои свойства
+    public class car : vehicle
     {
-        // Уникальные свойства только для автомобилей
-        public int DoorsCount { get; set; }  // Количество дверей
-        public string BodyType { get; set; } // Тип кузова
+        public int doorscount { get; set; }  // количество дверей (уникальное свойство)
+        public string bodytype { get; set; } // тип кузова (уникальное свойство)
         
-        // Конструктор класса Car
-        // base(brand, model, year) - передача данных в конструктор родительского класса Vehicle
-        public Car(string brand, string model, int year, int doorsCount, string bodyType)
-            : base(brand, model, year)  // ← ПЕРЕДАЧА ДАННЫХ В КОНСТРУКТОР VEHICLE
+        // конструктор: base(...) передает данные в конструктор vehicle
+        public car(string brand, string model, int year, int doorscount, string bodytype)
+            : base(brand, model, year)  // ← передача данных в родительский класс
         {
-            DoorsCount = doorsCount;  // Сохраняем уникальное свойство
-            BodyType = bodyType;      // Сохраняем уникальное свойство
-            Console.WriteLine("Данные переданы в конструктор Car");
+            this.doorscount = doorscount;  // сохраняем уникальные свойства car
+            this.bodytype = bodytype;
         }
         
-        // Уникальный метод только для автомобилей
-        public void StartEngine()
+        // уникальный метод только для автомобилей
+        public void startengine()
         {
-            Console.WriteLine("Автомобиль " + Brand + " " + Model + " завелся");
+            console.writeline("автомобиль " + brand + " " + model + " завелся");
         }
     }
     
-    // Класс Bicycle также наследует от Vehicle
-    public class Bicycle : Vehicle
+    // подкласс 2: bicycle также наследует от vehicle
+    public class bicycle : vehicle
     {
-        // Уникальные свойства только для велосипедов
-        public string BicycleType { get; set; }  // Тип велосипеда
-        public int GearsCount { get; set; }      // Количество передач
+        public string bicycletype { get; set; }  // тип велосипеда
+        public int gearscount { get; set; }      // количество передач
         
-        // Конструктор класса Bicycle
-        public Bicycle(string brand, string model, int year, string bicycleType, int gearsCount)
-            : base(brand, model, year)  // ← ПЕРЕДАЧА ДАННЫХ В КОНСТРУКТОР VEHICLE
+        // конструктор: передача данных через base(...)
+        public bicycle(string brand, string model, int year, string bicycletype, int gearscount)
+            : base(brand, model, year)  // ← передача данных в vehicle
         {
-            BicycleType = bicycleType;  // Сохраняем уникальное свойство
-            GearsCount = gearsCount;    // Сохраняем уникальное свойство
-            Console.WriteLine("Данные переданы в конструктор Bicycle");
+            this.bicycletype = bicycletype;  // уникальные свойства bicycle
+            this.gearscount = gearscount;
         }
         
-        // Уникальный метод только для велосипедов
-        public void RingBell()
+        // уникальный метод только для велосипедов
+        public void ringbell()
         {
-            Console.WriteLine("Велосипед " + Brand + " " + Model + " звенит звонком");
+            console.writeline("велосипед " + brand + " " + model + " звенит звонком");
         }
     }
     
-    class Program
+    // основная программа
+    class program
     {
-        static void Main(string[] args)
+        static void main(string[] args)
         {
-            Console.WriteLine("=== ПРОГРАММА ДЛЯ ДЕМОНСТРАЦИИ НАСЛЕДОВАНИЯ ===\n");
+            // создание объектов: данные передаются в конструкторы
+            car mycar = new car("toyota", "camry", 2022, 4, "седан");
+            bicycle mybicycle = new bicycle("giant", "escape 3", 2023, "городской", 21);
+            vehicle genericvehicle = new vehicle("general", "model x", 2020);
             
-            // СОЗДАНИЕ ОБЪЕКТОВ:
-            // 1. Создаем объект Car - данные передаются в конструктор Car
-            Console.WriteLine("1. СОЗДАНИЕ АВТОМОБИЛЯ:");
-            Car myCar = new Car("Toyota", "Camry", 2022, 4, "Седан");
-            /* 
-               ПЕРЕДАЧА ДАННЫХ:
-               1. Данные передаются в конструктор Car: "Toyota", "Camry", 2022, 4, "Седан"
-               2. Конструктор Car через base(...) передает первые 3 параметра в конструктор Vehicle
-               3. Конструктор Vehicle сохраняет: Brand="Toyota", Model="Camry", Year=2022
-
-4. Конструктор Car сохраняет: DoorsCount=4, BodyType="Седан"
-            */
+            // автомобиль: использует наследованные методы + свои
+            console.writeline("автомобиль:");
+            mycar.displayinfo();  // метод из vehicle
+            console.writeline("количество дверей: " + mycar.doorscount + ", тип кузова: " + mycar.bodytype);
+            mycar.startengine();  // уникальный метод car
             
-            Console.WriteLine("\n2. СОЗДАНИЕ ВЕЛОСИПЕДА:");
-            // 2. Создаем объект Bicycle - данные передаются в конструктор Bicycle
-            Bicycle myBicycle = new Bicycle("Giant", "Escape 3", 2023, "Городской", 21);
-            /* 
-               ПЕРЕДАЧА ДАННЫХ:
-               1. Данные передаются в конструктор Bicycle: "Giant", "Escape 3", 2023, "Городской", 21
-               2. Конструктор Bicycle через base(...) передает первые 3 параметра в конструктор Vehicle
-               3. Конструктор Vehicle сохраняет: Brand="Giant", Model="Escape 3", Year=2023
-               4. Конструктор Bicycle сохраняет: BicycleType="Городской", GearsCount=21
-            */
+            // велосипед: использует наследованные методы + свои
+            console.writeline("\nвелосипед:");
+            mybicycle.displayinfo();  // метод из vehicle
+            console.writeline("тип велосипеда: " + mybicycle.bicycletype + 
+                              ", количество передач: " + mybicycle.gearscount);
+            mybicycle.ringbell();  // уникальный метод bicycle
             
-            // 3. Создаем объект базового класса Vehicle
-            Console.WriteLine("\n3. СОЗДАНИЕ БАЗОВОГО ТРАНСПОРТНОГО СРЕДСТВА:");
-            Vehicle genericVehicle = new Vehicle("General", "Model X", 2020);
-            
-            Console.WriteLine("\n=== использование обьектов ===");
-            
-            // ИСПОЛЬЗОВАНИЕ МЕТОДОВ:
-            
-            // Автомобиль использует наследованные методы + свои уникальные
-            Console.WriteLine("\nАВТОМОБИЛЬ:");
-            myCar.DisplayInfo();  // Наследованный метод из Vehicle
-            Console.WriteLine("Количество дверей: " + myCar.DoorsCount + ", Тип кузова: " + myCar.BodyType);
-            myCar.StartEngine();  // Уникальный метод Car
-            
-            // Велосипед использует наследованные методы + свои уникальные
-            Console.WriteLine("\nВЕЛОСИПЕД:");
-            myBicycle.DisplayInfo();  // Наследованный метод из Vehicle
-            Console.WriteLine("Тип велосипеда: " + myBicycle.BicycleType + 
-                              ", Количество передач: " + myBicycle.GearsCount);
-            myBicycle.RingBell();  // Уникальный метод Bicycle
-            
-            // Базовое транспортное средство использует только свои методы
-            Console.WriteLine("\nБАЗОВОЕ ТРАНСПОРТНОЕ СРЕДСТВО:");
-            genericVehicle.DisplayInfo();  // Метод из Vehicle
-            
-            // Демонстрация полиморфизма: Vehicle может ссылаться на Car или Bicycle
-            Console.WriteLine("\n=== ДЕМОНСТРАЦИЯ ПОЛИМОРФИЗМА ===");
-            Vehicle vehicle1 = myCar;  // Vehicle ссылается на Car
-            Vehicle vehicle2 = myBicycle;  // Vehicle ссылается на Bicycle
-            
-            Console.WriteLine("\nVehicle ссылается на Car:");
-            vehicle1.DisplayInfo();  // Вызовется DisplayInfo() из Vehicle
-            
-            Console.WriteLine("\nVehicle ссылается на Bicycle:");
-            vehicle2.DisplayInfo();  // Вызовется DisplayInfo() из Vehicle
+            // базовый класс: использует только свои методы
+            console.writeline("\nбазовое транспортное средство:");
+            genericvehicle.displayinfo();  // метод из vehicle
         }
     }
 }
