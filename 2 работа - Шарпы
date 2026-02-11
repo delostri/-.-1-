@@ -1,96 +1,151 @@
 using System;
 
-namespace transportexample
+// БАЗОВЫЙ КЛАСС - Транспортное средство
+// Здесь хранится основная информация о любом транспорте
+public class Transport
 {
-    // базовый класс: содержит общие свойства для всех транспортных средств
-    public class vehicle
+    // Поля базового класса (данные передаются от пользователя через конструктор)
+    public string Brand { get; set; }      // Марка транспорта
+    public int Year { get; set; }          // Год выпуска
+
+    // Конструктор базового класса (сюда передаются данные при создании объекта)
+    public Transport(string brand, int year)
     {
-        public string brand { get; set; }    // марка транспортного средства
-        public string model { get; set; }    // модель транспортного средства
-        public int year { get; set; }        // год выпуска
-        
-        // конструктор: получает данные при создании объекта
-        public vehicle(string brand, string model, int year)
-        {
-            this.brand = brand;    // сохран марку
-            this.model = model;    // сохран модель
-            this.year = year;      // сохран год выпуска
-        }
-        
-        // метод для вывода основной информации
-        public void displayinfo()
-        {
-            console.writeline("марка: " + brand + ", модель: " + model + ", год: " + year);
-        }
+        Brand = brand;
+        Year = year;
+        Console.WriteLine($"cоздан транспорт: {Brand}, {Year} год");
     }
-    
-    // подкласс 1: car наследует все от vehicle и добавляет свои свойства
-    public class car : vehicle
+
+    public virtual void DisplayInfo()
     {
-        public int doorscount { get; set; }  // количество дверей (уникальное свойство)
-        public string bodytype { get; set; } // тип кузова (уникальное свойство)
-        
-        // конструктор: base(...) передает данные в конструктор vehicle
-        public car(string brand, string model, int year, int doorscount, string bodytype)
-            : base(brand, model, year)  // ← передача данных в родительский класс
-        {
-            this.doorscount = doorscount;  // сохраняем уникальные свойства car
-            this.bodytype = bodytype;
-        }
-        
-        // уникальный метод только для автомобилей
-        public void startengine()
-        {
-            console.writeline("автомобиль " + brand + " " + model + " завелся");
-        }
+        Console.WriteLine($"транспорт: {Brand}, {Year} год выпуска");
     }
-    
-    // подкласс 2: bicycle также наследует от vehicle
-    public class bicycle : vehicle
+}
+
+// подкласс 1 легковой автомобиль (наследует от Transport)
+// наследует все поля и методы Transport добавляет свои
+public class Car : Transport
+{
+    // доп поля подкласса
+    public int Doors { get; set; }         // Количество дверей
+    public string Color { get; set; }      // Цвет автомобиля
+
+    public Car(string brand, int year, int doors, string color)
+        : base(brand, year)  // Передача данных в родительский класс
     {
-        public string bicycletype { get; set; }  // тип велосипеда
-        public int gearscount { get; set; }      // количество передач
-        
-        // конструктор: передача данных через base(...)
-        public bicycle(string brand, string model, int year, string bicycletype, int gearscount)
-            : base(brand, model, year)  // ← передача данных в vehicle
-        {
-            this.bicycletype = bicycletype;  // уникальные свойства bicycle
-            this.gearscount = gearscount;
-        }
-        
-        // уникальный метод только для велосипедов
-        public void ringbell()
-        {
-            console.writeline("велосипед " + brand + " " + model + " звенит звонком");
-        }
+        Doors = doors;      // Данные сохраняются в подклассе
+        Color = color;
+        Console.WriteLine($"это автомобиль с {Doors} дверями, цвет: {Color}");
     }
-    
-    class program
+
+    // переопредел метода
+    public override void DisplayInfo()
     {
-        static void main(string[] args)
+        base.DisplayInfo();  // Вызов метода из базового класса
+        Console.WriteLine($"автомобиль: {Doors} дверей, цвет {Color}");
+    }
+
+    public void Honk()
+    {
+        Console.WriteLine($"{Brand} бибикает: бип!");
+    }
+}
+
+// подкласс 2 грузовик 
+public class Truck : Transport
+{
+    // дополнительные поля подкласса
+    public double LoadCapacity { get; set; }  // груз в тоннах
+    public bool HasTrailer { get; set; }      // наличие прицепа
+
+ 
+    public Truck(string brand, int year, double capacity, bool hasTrailer)
+        : base(brand, year)  
+    {
+        LoadCapacity = capacity;    
+        HasTrailer = hasTrailer;
+        Console.WriteLine($"это грузовик грузоподъемностью {LoadCapacity} т");
+    }
+
+    // Переопределение метода
+    public override void DisplayInfo()
+    {
+        base.DisplayInfo(); 
+        Console.WriteLine($"грузовик: {LoadCapacity} т, прицеп: {(HasTrailer ? "есть" : "нет")}");
+    }
+
+    public void LoadCargo(double weight)
+    {
+        if (weight <= LoadCapacity)
+            Console.WriteLine($"{Brand} загружен {weight} тоннами");
+        else
+            Console.WriteLine($"{Brand} не может взять {weight} т (максимум {LoadCapacity} т)");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+
+        Console.WriteLine("создание объектов и передача данных между классами\n");
+
+
+        Console.WriteLine("1. создание обьектов:");
+
+
+
+        Car myCar = new Car("Toyota", 2020, 4, "Red");
+
+        Console.WriteLine();  
+
+        Truck myTruck = new Truck("Volvo", 2018, 10.5, true);
+
+Console.WriteLine();
+
+
+        Console.WriteLine("2. вызов методов:");
+
+
+        // Вызов переопределенного метода (данные идут из полей объекта в метод)
+        Console.WriteLine("\nинформация об автомобиле:");
+        myCar.DisplayInfo();  
+
+        Console.WriteLine("\nинформация о грузовике:");
+        myTruck.DisplayInfo();
+
+
+        Console.WriteLine();
+        Console.WriteLine("3. уникальные методы подклассов:");
+
+
+
+        myCar.Honk();  
+
+
+        myTruck.LoadCargo(8.0);  
+        myTruck.LoadCargo(12.0);
+
+        Console.WriteLine();
+
+        Console.WriteLine("4. применение полиморфизма:");
+
+
+        Transport[] garage = new Transport[3];
+
+        garage[0] = new Car("BMW", 2021, 2, "Black");
+        garage[1] = new Truck("MAN", 2019, 15.0, false);
+        garage[2] = new Car("Honda", 2017, 4, "Blue");
+
+        Console.WriteLine("\nобход гаража через базовый класс:");
+        foreach (Transport vehicle in garage)
         {
-            // создание объектов: данные передаются в конструкторы
-            car mycar = new car("toyota", "camry", 2022, 4, "седан");
-            bicycle mybicycle = new bicycle("giant", "escape 3", 2023, "городской", 21);
-            vehicle genericvehicle = new vehicle("general", "model x", 2020);
-            
-            // автомобиль: использует наследованные методы + свои
-            console.writeline("автомобиль:");
-            mycar.displayinfo();  // метод из vehicle
-            console.writeline("количество дверей: " + mycar.doorscount + ", тип кузова: " + mycar.bodytype);
-            mycar.startengine();  // уникальный метод car
-            
-            // велосипед: использует наследованные методы + свои
-            console.writeline("\nвелосипед:");
-            mybicycle.displayinfo();  // метод из vehicle
-            console.writeline("тип велосипеда: " + mybicycle.bicycletype + 
-                              ", количество передач: " + mybicycle.gearscount);
-            mybicycle.ringbell();  // уникальный метод bicycle
-            
-            // базовый класс: использует только свои методы
-            console.writeline("\nбазовое транспортное средство:");
-            genericvehicle.displayinfo();  // метод из vehicle
+            vehicle.DisplayInfo();
+            Console.WriteLine("---");
         }
+
+        Console.WriteLine();
+        Console.WriteLine("программа завершена, нажмите любую клавишу");
+        Console.ReadKey();
     }
 }
