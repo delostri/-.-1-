@@ -67,7 +67,7 @@ public class Truck : Transport
         Console.WriteLine($"это грузовик грузоподъемностью {LoadCapacity} т");
     }
 
-    // Переопределение метода
+    // переопределение метода
     public override void DisplayInfo()
     {
         base.DisplayInfo(); 
