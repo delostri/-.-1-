@@ -1,0 +1,107 @@
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+class Program
+{
+    static void Main()
+    {
+        // 1. все процессы
+        Console.WriteLine("=== все запущенные процессы ===");
+        var procs = Process.GetProcesses();
+        foreach (var p in procs)
+        {
+            if (p.Id < 20) // только первые 20 id
+                Console.WriteLine($"id: {p.Id}  name: {p.ProcessName}");
+        }
+        Console.WriteLine($"всего процессов: {procs.Length}\n");
+
+        // 2. потоки visual studio
+        Console.WriteLine("=== потоки visual studio ===");
+        string vsName = null;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            vsName = "devenv";
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            vsName = "VisualStudio";
+
+        if (vsName != null)
+        {
+            var vsList = Process.GetProcessesByName(vsName);
+            if (vsList.Length > 0)
+            {
+                var vs = vsList[0];
+                var threads = vs.Threads;
+                Console.WriteLine($"процесс: {vs.ProcessName} (id: {vs.Id})");
+                Console.WriteLine($"количество потоков: {threads.Count}");
+                foreach (ProcessThread t in threads)
+                {
+                    Console.WriteLine($"  thread id: {t.Id}, priority: {t.CurrentPriority}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("visual studio не запущена.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("неизвестная ос.");
+        }
+        Console.WriteLine();
+
+        // 3. запустить сторонние программы
+        Console.WriteLine("=== запуск сторонних процессов ===");
+
+        // блокнот
+        try
+        {
+            Process.Start("notepad.exe");
+            Console.WriteLine("запущен блокнот.");
+        }
+        catch { }
+
+        // калькулятор или аналог
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start("calc.exe");
+                Console.WriteLine("запущен калькулятор.");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", "-a Calculator");
+                Console.WriteLine("запущен калькулятор (mac).");
+            }
+            else
+            {
+                Process.Start("gedit");
+                Console.WriteLine("запущен gedit.");
+            }
+        }
+        catch { }
+
+        // браузер с сайтом
+        try
+        {
+            string url = "https://metanit.com";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", url);
+            }
+            else
+            {
+                Process.Start("xdg-open", url);
+            }
+            Console.WriteLine($"запущен браузер с адресом {url}");
+        }
+        catch { }
+
+        Console.WriteLine("\nготово. жмите любую клавишу...");
+        Console.ReadKey();
+    }
+}
