@@ -7,7 +7,7 @@ class Program
     static void Main()
     {
         // 1. все процессы
-        Console.WriteLine("=== все запущенные процессы ===");
+        Console.WriteLine(" все запущенные процессы ");
         var procs = Process.GetProcesses();
         foreach (var p in procs)
         {
@@ -50,7 +50,7 @@ class Program
         Console.WriteLine();
 
         // 3. запустить сторонние программы
-        Console.WriteLine("=== запуск сторонних процессов ===");
+        Console.WriteLine(" запуск сторонних процессов ");
 
         // блокнот
         try
