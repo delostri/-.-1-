@@ -1,0 +1,38 @@
+using System;
+using System.IO;
+using System.Net;
+
+class Program
+{
+    static void Main()
+    {
+        string fileUrl = "https://people.sc.fsu.edu/~jburkardt/data/csv/airtravel.csv";
+        string localPath = @"C:\\Users\\23_ИП-391К\Downloads\airtravel.csv";
+
+
+        using (WebClient client = new WebClient())
+        {
+            try
+            {
+                client.DownloadFile(fileUrl, localPath);
+                Console.WriteLine("файл успешно скачан: " + localPath);
+
+                Console.WriteLine("\nсодержимое файла (первые 10 строк):");
+                using (StreamReader reader = new StreamReader(localPath))
+                {
+                    string line;
+                    int lineCount = 0;
+                    while ((line = reader.ReadLine()) != null && lineCount < 10)
+                    {
+                        Console.WriteLine(line);
+                        lineCount++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ошибка: " + ex.Message);
+            }
+        }
+    }
+}
