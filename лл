@@ -13,11 +13,9 @@ class Program
         {
             try
             {
-                // 1. Скачиваем файл
                 client.DownloadFile(fileUrl, localPath);
                 Console.WriteLine("Файл успешно скачан: " + localPath);
 
-                // 2. Читаем и выводим первые несколько строк
                 Console.WriteLine("\nСодержимое файла (первые 10 строк):");
                 using (StreamReader reader = new StreamReader(localPath))
                 {
