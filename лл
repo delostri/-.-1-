@@ -1,0 +1,39 @@
+using System;
+using System.IO;
+using System.Net;
+
+class Program
+{
+    static void Main()
+    {
+        string fileUrl = "https://example.com/data.csv"; // замените на реальный URL
+        string localPath = "downloaded_data.csv";
+
+        using (WebClient client = new WebClient())
+        {
+            try
+            {
+                // 1. Скачиваем файл
+                client.DownloadFile(fileUrl, localPath);
+                Console.WriteLine("Файл успешно скачан: " + localPath);
+
+                // 2. Читаем и выводим первые несколько строк
+                Console.WriteLine("\nСодержимое файла (первые 10 строк):");
+                using (StreamReader reader = new StreamReader(localPath))
+                {
+                    string line;
+                    int lineCount = 0;
+                    while ((line = reader.ReadLine()) != null && lineCount < 10)
+                    {
+                        Console.WriteLine(line);
+                        lineCount++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка: " + ex.Message);
+            }
+        }
+    }
+}
