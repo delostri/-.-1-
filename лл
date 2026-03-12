@@ -6,7 +6,7 @@ class Program
 {
     static void Main()
     {
-        string fileUrl = "https://raw.githubusercontent.com/datablist/sample-csv-files/main/files/customers/customers-100.csv";
+        string fileUrl = "https://people.sc.fsu.edu/~jburkardt/data/csv/airtravel.csv";
         string localPath = "downloaded_data.csv";
 
         using (WebClient client = new WebClient())
