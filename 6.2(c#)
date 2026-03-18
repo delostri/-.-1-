@@ -1,0 +1,62 @@
+using System;
+using System.IO;
+using OfficeOpenXml;
+
+class Program
+{
+static void Main()
+ {
+string path = @"data.xlsx"; // или полный путь
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+using (var pkg = new ExcelPackage(new FileInfo(path)))
+ {
+// выводим названия листов
+Console.WriteLine("листы в файле:");
+foreach (var ws in pkg.Workbook.Worksheets)
+Console.WriteLine(ws.Name);
+
+// работаем с листом продажи
+var sales = pkg.Workbook.Worksheets["Продажи"];
+if (sales != null)
+{
+Console.WriteLine("\nпервые 5 строк продаж:");
+for (int row = 2; row <= 6; row++)
+{
+string date = sales.Cells[row, 1].Text;
+string sum = sales.Cells[row, 2].Text;
+string qty = sales.Cells[row, 3].Text;
+Console.WriteLine($"{date}\t{sum}\t{qty}");
+}
+}
+
+// фильтруем затраты по категории "Аренда"
+var costs = pkg.Workbook.Worksheets["Затраты"];
+if (costs != null)
+{
+Console.WriteLine("\nзатраты на аренду:");
+int rows = costs.Dimension.Rows;
+for (int row = 2; row <= rows; row++)
+{
+string cat = costs.Cells[row, 2].Text;
+if (cat == "Аренда")
+{
+ string date = costs.Cells[row, 1].Text;
+string sum = costs.Cells[row, 3].Text;
+Console.WriteLine($"{date}\t{cat}\t{sum}");
+}
+}
+}
+
+// считаем общую сумму всех затрат
+double total = 0;
+for (int row = 2; row <= costs.Dimension.Rows; row++)
+{
+if (double.TryParse(costs.Cells[row, 3].Text, out double val))
+total += val;
+}
+Console.WriteLine($"\nобщая сумма затрат: {total}");
+}
+ Console.ReadKey();
+}
+}
