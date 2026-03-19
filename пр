@@ -1,0 +1,20 @@
+import pandas as pd
+import os
+
+file = "data.xlsx"
+
+if not os.path.exists(file):
+    print("файл data.xlsx не найден")
+    exit()
+
+# читаем все листы сразу
+sheets = pd.read_excel(file, sheet_name=None)
+
+print("листы в файле:")
+for name in sheets.keys():
+    print(f"- {name}")
+
+# выводим первые 5 строк каждого листа
+for name, df in sheets.items():
+    print(f"\nпервые 5 строк листа '{name}':")
+    print(df.head())
