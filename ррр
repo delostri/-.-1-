@@ -1,0 +1,67 @@
+using System;
+using System.IO;
+using System.Linq;
+using OfficeOpenXml;
+
+class Program
+{
+    static void Main()
+    {
+        string path = "data.xlsx";
+        if (!File.Exists(path))
+        {
+            Console.WriteLine("файл data.xlsx не найден");
+            Console.ReadKey();
+            return;
+        }
+
+        using (var pkg = new ExcelPackage(new FileInfo(path)))
+        {
+            var sheets = pkg.Workbook.Worksheets;
+            Console.WriteLine("листы в файле:");
+            foreach (var s in sheets)
+                Console.WriteLine(s.Name);
+
+            // ищем лист продажи (без учёта регистра)
+            var sales = sheets.FirstOrDefault(s => s.Name.Equals("продажи", StringComparison.OrdinalIgnoreCase));
+            if (sales != null)
+            {
+                Console.WriteLine("\nпервые 5 строк продаж:");
+                for (int row = 2; row <= 6; row++)
+                {
+                    string date = sales.Cells[row, 1].Text;
+                    string sum = sales.Cells[row, 2].Text;
+                    string qty = sales.Cells[row, 3].Text;
+                    Console.WriteLine($"{date}\t{sum}\t{qty}");
+                }
+            }
+            else
+                Console.WriteLine("лист 'продажи' не найден");
+
+            // ищем лист затраты
+            var costs = sheets.FirstOrDefault(s => s.Name.Equals("затраты", StringComparison.OrdinalIgnoreCase));
+            if (costs != null)
+            {
+                Console.WriteLine("\nзатраты на аренду:");
+                int rows = costs.Dimension?.Rows ?? 0;
+                double total = 0;
+                for (int row = 2; row <= rows; row++)
+                {
+                    string cat = costs.Cells[row, 2].Text;
+                    if (cat.Equals("аренда", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string date = costs.Cells[row, 1].Text;
+                        string sum = costs.Cells[row, 3].Text;
+                        Console.WriteLine($"{date}\t{cat}\t{sum}");
+                    }
+                    if (double.TryParse(costs.Cells[row, 3].Text, out double val))
+                        total += val;
+                }
+                Console.WriteLine($"общая сумма затрат: {total}");
+            }
+            else
+                Console.WriteLine("лист 'затраты' не найден");
+        }
+        Console.ReadKey();
+    }
+}
