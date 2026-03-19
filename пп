@@ -1,0 +1,54 @@
+using system;
+using system.io;
+using officeopenxml;
+
+class program
+{
+    static void main()
+    {
+        string path = @"data.xlsx";
+        excelpackage.license.setnoncommercialorganization("student");
+
+        using (var pkg = new excelpackage(new fileinfo(path)))
+        {
+            var sheets = pkg.workbook.worksheets;
+            console.writeline("листы:");
+            foreach (var ws in sheets)
+                console.writeline(ws.name);
+
+            var sales = sheets["продажи"];
+            if (sales != null)
+            {
+                console.writeline("\nпервые 5 строк продаж:");
+                for (int row = 2; row <= 6; row++)
+                {
+                    string date = sales.cells[row, 1].text;
+                    string sum = sales.cells[row, 2].text;
+                    string qty = sales.cells[row, 3].text;
+                    console.writeline($"{date}\t{sum}\t{qty}");
+                }
+            }
+
+            var costs = sheets["затраты"];
+            if (costs != null)
+            {
+                console.writeline("\nзатраты на аренду:");
+                int rows = costs.dimension.rows;
+                double total = 0;
+                for (int row = 2; row <= rows; row++)
+                {
+                    string cat = costs.cells[row, 2].text;
+                    if (cat.tolower() == "аренда")
+                    {
+                        string date = costs.cells[row, 1].text;
+                        string sum = costs.cells[row, 3].text;
+                        console.writeline($"{date}\t{cat}\t{sum}");
+                    }
+                    total += double.parse(costs.cells[row, 3].text);
+                }
+                console.writeline($"общая сумма затрат: {total}");
+            }
+        }
+        console.readkey();
+    }
+}
