@@ -1,0 +1,32 @@
+import pandas as pd
+
+# чтение первого листа (по умолчанию)
+df = pd.read_excel("data.xlsx")
+print(df)
+print()
+
+# чтение конкретного листа
+df = pd.read_excel("data.xlsx", sheet_name="продажи")
+print(df)
+print()
+
+# чтение нескольких листов сразу
+df = pd.read_excel("data.xlsx", sheet_name=["продажи", "затраты"])
+print(df["продажи"])
+print(df["затраты"])
+print()
+
+# пропуск первой строки (skiprows)
+df = pd.read_excel("data.xlsx", sheet_name="продажи", skiprows=1)
+print(df)
+print()
+
+# чтение только определённых столбцов
+df = pd.read_excel("data.xlsx", sheet_name="продажи", usecols=["дата", "сумма"])
+print(df)
+print()
+
+# ограничение количества строк (nrows)
+df = pd.read_excel("data.xlsx", sheet_name="продажи", nrows=2)
+print(df)
+print()
