@@ -1,0 +1,127 @@
+using System;
+using System.Threading;
+using OfficeOpenXml;
+
+class Program
+{
+    // объект для синхронизации вывода в консоль, чтобы сообщения не перемешивались
+    private static readonly object consoleLock = new object();
+
+    static void Main(string[] args)
+    {
+        string filePath = @"data.xlsx"; // файл должен лежать в папке с программой
+
+        // создаём два потока, каждый читает свой лист
+        // один поток будет с задержкой, другой без
+        Thread thread1 = new Thread(() => ReadExcelSheet(filePath, "Лист1", withDelay: false));
+        Thread thread2 = new Thread(() => ReadExcelSheet(filePath, "Лист2", withDelay: true));
+
+        thread1.Name = "Поток-1 (Лист1)";
+        thread2.Name = "Поток-2 (Лист2)";
+
+        // выводим статус до запуска
+        PrintThreadStatus(thread1, "до запуска");
+        PrintThreadStatus(thread2, "до запуска");
+
+        // запускаем оба потока
+        thread1.Start();
+        thread2.Start();
+
+        // выводим статус после запуска
+        PrintThreadStatus(thread1, "после запуска");
+        PrintThreadStatus(thread2, "после запуска");
+
+        // ждём завершения потоков, иначе программа закроется раньше
+        thread1.Join();
+        thread2.Join();
+
+        Console.WriteLine("\nОба потока завершили работу.");
+        Console.ReadKey();
+    }
+
+    /// <summary>
+    /// читает указанный лист excel и выводит содержимое в консоль
+    /// </summary>
+    /// <param name="filePath">путь к файлу</param>
+    /// <param name="sheetName">имя листа</param>
+    /// <param name="withDelay">если true, поток засыпает на 2 секунды перед выводом</param>
+    static void ReadExcelSheet(string filePath, string sheetName, bool withDelay)
+    {
+        lock (consoleLock)
+        {
+            Console.WriteLine($"\n[{Thread.CurrentThread.Name}] начал чтение листа \"{sheetName}\"");
+        }
+
+        try
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // необходимо для работы epplus
+
+            using (var package = new ExcelPackage(new System.IO.FileInfo(filePath)))
+            {
+                var worksheet = package.Workbook.Worksheets[sheetName];
+                if (worksheet == null)
+                {
+                    lock (consoleLock)
+                    {
+                        Console.WriteLine($"[{Thread.CurrentThread.Name}] лист \"{sheetName}\" не найден.");
+                    }
+                    return;
+                }
+
+                // если нужна задержка, останавливаем поток на 2 секунды
+                if (withDelay)
+                {
+                    lock (consoleLock)
+                    {
+                        Console.WriteLine($"[{Thread.CurrentThread.Name}] задержка 2 секунды...");
+                    }
+                    Thread.Sleep(2000);
+                }
+
+                int rows = worksheet.Dimension.Rows;
+                int cols = worksheet.Dimension.Columns;
+
+                lock (consoleLock)
+                {
+                    Console.WriteLine($"[{Thread.CurrentThread.Name}] содержимое листа \"{sheetName}\":");
+                }
+
+                for (int row = 1; row <= rows; row++)
+                {
+                    string line = "";
+                    for (int col = 1; col <= cols; col++)
+                    {
+                        line += worksheet.Cells[row, col].Text + "\t";
+                    }
+                    lock (consoleLock)
+                    {
+                        Console.WriteLine($"[{Thread.CurrentThread.Name}] {line}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            lock (consoleLock)
+            {
+                Console.WriteLine($"[{Thread.CurrentThread.Name}] ошибка: {ex.Message}");
+            }
+        }
+
+        lock (consoleLock)
+        {
+            Console.WriteLine($"[{Thread.CurrentThread.Name}] завершил работу.");
+        }
+    }
+
+    /// <summary>
+    /// выводит статус потока (в каком состоянии)
+    /// </summary>
+    static void PrintThreadStatus(Thread thread, string moment)
+    {
+        lock (consoleLock)
+        {
+            Console.WriteLine($"поток \"{thread.Name}\" {moment}: IsAlive = {thread.IsAlive}, State = {thread.ThreadState}");
+        }
+    }
+}
