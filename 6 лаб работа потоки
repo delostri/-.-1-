@@ -1,37 +1,36 @@
 using System;
+using System.ComponentModel;
 using System.Threading;
 using OfficeOpenXml;
 
 class Program
 {
-    // объект для синхронизации вывода в консоль, чтобы сообщения не перемешивались
     private static readonly object consoleLock = new object();
 
     static void Main(string[] args)
     {
-        string filePath = @"data.xlsx"; // файл должен лежать в папке с программой
+        string filePath = @"data.xlsx"; 
 
-        // создаём два потока, каждый читает свой лист
-        // один поток будет с задержкой, другой без
+
         Thread thread1 = new Thread(() => ReadExcelSheet(filePath, "Лист1", withDelay: false));
         Thread thread2 = new Thread(() => ReadExcelSheet(filePath, "Лист2", withDelay: true));
 
         thread1.Name = "Поток-1 (Лист1)";
         thread2.Name = "Поток-2 (Лист2)";
 
-        // выводим статус до запуска
+        
         PrintThreadStatus(thread1, "до запуска");
         PrintThreadStatus(thread2, "до запуска");
 
-        // запускаем оба потока
+       
         thread1.Start();
         thread2.Start();
 
-        // выводим статус после запуска
+       
         PrintThreadStatus(thread1, "после запуска");
         PrintThreadStatus(thread2, "после запуска");
 
-        // ждём завершения потоков, иначе программа закроется раньше
+        
         thread1.Join();
         thread2.Join();
 
@@ -39,9 +38,6 @@ class Program
         Console.ReadKey();
     }
 
-    /// <summary>
-    /// читает указанный лист excel и выводит содержимое в консоль
-    /// </summary>
     /// <param name="filePath">путь к файлу</param>
     /// <param name="sheetName">имя листа</param>
     /// <param name="withDelay">если true, поток засыпает на 2 секунды перед выводом</param>
@@ -54,7 +50,8 @@ class Program
 
         try
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // необходимо для работы epplus
+            
+
 
             using (var package = new ExcelPackage(new System.IO.FileInfo(filePath)))
             {
@@ -68,7 +65,6 @@ class Program
                     return;
                 }
 
-                // если нужна задержка, останавливаем поток на 2 секунды
                 if (withDelay)
                 {
                     lock (consoleLock)
@@ -114,9 +110,6 @@ class Program
         }
     }
 
-    /// <summary>
-    /// выводит статус потока (в каком состоянии)
-    /// </summary>
     static void PrintThreadStatus(Thread thread, string moment)
     {
         lock (consoleLock)
