@@ -1,0 +1,68 @@
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+var list = new List<string>
+{
+    "яблоко", "банан", "апельсин", "груша", "банан",
+    "киви", "манго", "яблоко", "виноград", "персик", "банан"
+};
+
+app.MapGet("/api/list", () => list);
+
+app.MapGet("/api/list/prelast", () =>
+{
+    if (list.Count < 2) return Results.NotFound("нет предпоследнего");
+    return Results.Json(new { prelast = list[^2] });
+});
+
+app.MapGet("/api/list/index/{index}", (int index) =>
+{
+    if (index < 0 || index >= list.Count) return Results.NotFound("индекс вне диапазона");
+    return Results.Json(new { index, value = list[index] });
+});
+
+app.MapGet("/api/list/range", (int start, int end) =>
+{
+    if (start < 0 || end >= list.Count || start > end) return Results.BadRequest("некорректный диапазон");
+    return Results.Json(list.GetRange(start, end - start + 1));
+});
+
+app.MapPut("/api/list/{index}", (int index, string value) =>
+{
+    if (index < 0 || index >= list.Count) return Results.NotFound("индекс не найден");
+    list[index] = value;
+    return Results.Json(new { message = "обновлено", index, newValue = value });
+});
+
+app.MapPost("/api/list/add", (string value) =>
+{
+    list.Add(value);
+    return Results.Json(new { message = "добавлен", value, length = list.Count });
+});
+
+app.MapPost("/api/list/insert", (int index, string value) =>
+{
+    if (index < 0 || index > list.Count) return Results.BadRequest("индекс вне границ");
+    list.Insert(index, value);
+    return Results.Json(new { message = "вставлен", index, value, length = list.Count });
+});
+
+app.MapGet("/api/list/count/{value}", (string value) =>
+{
+    int cnt = list.Count(x => x == value);
+    return Results.Json(new { value, count = cnt });
+});
+
+app.MapGet("/api/list/copy", () =>
+{
+    var copy = new List<string>(list);
+    if (copy.Count > 0) copy[0] = "ИЗМЕНЁННЫЙ_ПЕРВЫЙ";
+    return Results.Json(new
+    {
+        original = list,
+        modifiedCopy = copy,
+        areEqual = list.SequenceEqual(copy)
+    });
+});
+
+app.Run();
