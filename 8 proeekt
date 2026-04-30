@@ -1,0 +1,45 @@
+using System;
+using System.IO;
+using System.IO.Pipes;
+using System.Text;          // <-- добавлено для Encoding
+
+namespace ClientApp
+{
+    class Program
+    {
+        static void Main()
+        {
+            string pipeName = "MyDataPipe";
+
+            using (var client = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut))
+            {
+                Console.WriteLine("Клиент: пытаюсь подключиться...");
+                client.Connect();
+                Console.WriteLine("Клиент: подключился!");
+
+                // --- Чтение сообщения от сервера ---
+                string serverMessage;
+                using (var reader = new StreamReader(client, Encoding.UTF8, true, 4096, leaveOpen: true))
+                {
+                    serverMessage = reader.ReadLine();
+                }   // reader закрывается, но канал остаётся открыт!
+
+                Console.WriteLine($"Клиент: получено от сервера -> {serverMessage}");
+
+                // --- Формирование и отправка ответа ---
+                string response = "ОТВЕТ " + DateTime.Now.ToString("HH:mm:ss");
+
+                using (var writer = new StreamWriter(client, Encoding.UTF8, 4096, leaveOpen: true))
+                {
+                    writer.AutoFlush = true;
+                    writer.WriteLine(response);
+                }   // writer закрывается, канал по-прежнему открыт
+
+                Console.WriteLine($"Клиент: отправлено -> {response}");
+            }   // здесь client.Dispose() закроет канал окончательно
+
+            Console.WriteLine("Клиент: работа завершена. Нажмите любую клавишу...");
+            Console.ReadKey();
+        }
+    }
+}
