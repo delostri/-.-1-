@@ -1,0 +1,39 @@
+using System;
+using System.IO;
+using System.IO.Pipes;
+
+namespace ServerApp
+{
+    class Program
+    {
+        static void Main()
+        {
+            string pipeName = "MyDataPipe";
+            using (var server = new NamedPipeServerStream(pipeName, PipeDirection.InOut))
+            {
+                Console.WriteLine("Сервер: ожидаю подключения клиента...");
+                server.WaitForConnection();
+
+                // Произвольные данные — строка
+                string outgoingData = "Привет, клиент! 42";
+
+                // Отправка
+                using (var writer = new StreamWriter(server))
+                {
+                    writer.AutoFlush = true;
+                    writer.WriteLine(outgoingData);
+                }
+                Console.WriteLine($"Сервер: отправлено -> {outgoingData}");
+
+                // Получение ответа
+                using (var reader = new StreamReader(server))
+                {
+                    string response = reader.ReadLine();
+                    Console.WriteLine($"Сервер: получено -> {response}");
+                }
+            }
+            Console.WriteLine("Нажмите любую клавишу для выхода...");
+            Console.ReadKey();
+        }
+    }
+}
