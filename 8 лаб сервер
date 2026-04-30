@@ -1,0 +1,44 @@
+using System;
+using System.IO;
+using System.IO.Pipes;
+using System.Text.Json;
+
+namespace ServerApp
+{
+    [Serializable]
+    class Person
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            string pipeName = "MyDataPipe"; // Имя канала (должно совпадать с клиентом)
+            using var server = new NamedPipeServerStream(pipeName, PipeDirection.InOut);
+            Console.WriteLine("Сервер: ожидаю подключения клиента...");
+            server.WaitForConnection();
+
+            // Создаём объект для передачи
+            var person = new Person { Name = "Alice", Age = 28 };
+            string json = JsonSerializer.Serialize(person);
+
+            // Запись в канал (отправка)
+            using var writer = new StreamWriter(server) { AutoFlush = true };
+            writer.WriteLine(json);
+            Console.WriteLine($"Сервер: отправлено -> {json}");
+
+            // Чтение ответа от клиента
+            using var reader = new StreamReader(server);
+            string responseJson = reader.ReadLine();
+            var response = JsonSerializer.Deserialize<Person>(responseJson);
+            Console.WriteLine($"Сервер: получено -> {responseJson}");
+            Console.WriteLine($"Имя: {response.Name}, возраст: {response.Age}");
+
+            Console.WriteLine("Нажмите любую клавишу для выхода...");
+            Console.ReadKey();
+        }
+    }
+}
