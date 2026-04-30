@@ -1,0 +1,43 @@
+using System;
+using System.IO;
+using System.IO.Pipes;
+
+namespace ClientApp
+{
+    class Program
+    {
+        static void Main()
+        {
+            string pipeName = "MyDataPipe";  // Имя должно совпадать с сервером!
+
+            using (var client = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut))
+            {
+                Console.WriteLine("Клиент: пытаюсь подключиться к серверу...");
+                client.Connect();       // Ждем соединения
+                Console.WriteLine("Клиент: подключился!");
+
+                // Получаем сообщение от сервера
+                string serverMessage;
+                using (var reader = new StreamReader(client))
+                {
+                    serverMessage = reader.ReadLine();
+                }
+                Console.WriteLine($"Клиент: получено от сервера -> {serverMessage}");
+
+                // Формируем ответ (произвольные данные)
+                string response = "ОТВЕТ " + DateTime.Now.ToString("HH:mm:ss");
+
+                // Отправляем ответ
+                using (var writer = new StreamWriter(client))
+                {
+                    writer.AutoFlush = true;
+                    writer.WriteLine(response);
+                }
+                Console.WriteLine($"Клиент: отправлено -> {response}");
+            }
+
+            Console.WriteLine("Клиент: работа завершена. Нажмите любую клавишу...");
+            Console.ReadKey();
+        }
+    }
+}
