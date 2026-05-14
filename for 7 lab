@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 
-string baseUrl = "https://localhost:7009"; // ТВОЙ ПОРТ! Смотри в запущенном сервере
-
+string baseUrl = "https://localhost:7009"; 
 using HttpClient client = new HttpClient();
 
 while (true)
