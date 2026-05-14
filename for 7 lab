@@ -72,3 +72,20 @@ async Task DeleteItem()
         Console.WriteLine($"Ошибка: {response.StatusCode}");
     Console.ReadLine();
 }
+
+
+
+
+
+
+
+
+
+app.MapDelete("/api/list/{index}", (int index) =>
+{
+    if (index < 0 || index >= list.Count)
+        return Results.NotFound("индекс вне диапазона");
+    var removed = list[index];
+    list.RemoveAt(index);
+    return Results.Json(new { message = "удалён", index, removedValue = removed, length = list.Count });
+});
