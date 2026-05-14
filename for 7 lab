@@ -1,0 +1,75 @@
+using System.Net.Http.Json;
+
+string baseUrl = "https://localhost:7009"; // ТВОЙ ПОРТ! Смотри в запущенном сервере
+
+using HttpClient client = new HttpClient();
+
+while (true)
+{
+    Console.Clear();
+    Console.WriteLine("Управление списком фруктов");
+    Console.WriteLine("1 - Показать весь список");
+    Console.WriteLine("2 - Добавить элемент в конец");
+    Console.WriteLine("3 - Удалить элемент по индексу");
+    Console.WriteLine("4 - Выйти");
+    Console.Write("Выберите действие: ");
+
+    var choice = Console.ReadLine();
+    switch (choice)
+    {
+        case "1":
+            await ShowList();
+            break;
+        case "2":
+            await AddItem();
+            break;
+        case "3":
+            await DeleteItem();
+            break;
+        case "4":
+            return;
+        default:
+            Console.WriteLine("Неверный выбор. Нажми Enter...");
+            Console.ReadLine();
+            break;
+    }
+}
+
+async Task ShowList()
+{
+    var list = await client.GetFromJsonAsync<List<string>>($"{baseUrl}/api/list");
+    Console.WriteLine("\nТекущий список:");
+    for (int i = 0; i < list.Count; i++)
+        Console.WriteLine($"{i}: {list[i]}");
+    Console.WriteLine("\nНажми Enter...");
+    Console.ReadLine();
+}
+
+async Task AddItem()
+{
+    Console.Write("Введите значение: ");
+    string value = Console.ReadLine();
+    var response = await client.PostAsJsonAsync($"{baseUrl}/api/list/add", value);
+    if (response.IsSuccessStatusCode)
+        Console.WriteLine("Добавлено!");
+    else
+        Console.WriteLine($"Ошибка: {response.StatusCode}");
+    Console.ReadLine();
+}
+
+async Task DeleteItem()
+{
+    Console.Write("Введите индекс для удаления: ");
+    if (!int.TryParse(Console.ReadLine(), out int index))
+    {
+        Console.WriteLine("Неверный индекс");
+        Console.ReadLine();
+        return;
+    }
+    var response = await client.DeleteAsync($"{baseUrl}/api/list/{index}");
+    if (response.IsSuccessStatusCode)
+        Console.WriteLine("Удалено!");
+    else
+        Console.WriteLine($"Ошибка: {response.StatusCode}");
+    Console.ReadLine();
+}
