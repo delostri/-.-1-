@@ -1,0 +1,64 @@
+using System.Net.Http.Json;
+using System.Text.Json;
+
+var client = new HttpClient();
+client.BaseAddress = new Uri("https://localhost:7094/");
+
+Console.WriteLine("1. исходный список:");
+var list = await client.GetFromJsonAsync<List<int>>("api/list");
+PrintList(list);
+
+Console.WriteLine("\n2. предпосл элемент:");
+var prelast = await client.GetFromJsonAsync<int>("api/list/prelast");
+Console.WriteLine(prelast);
+
+Console.WriteLine("\n3. элементы по индексам 0, 3 и 7:");
+foreach (int i in new[] { 0, 3, 7 })
+{
+    var elem = await client.GetFromJsonAsync<int>($"api/list/element/{i}");
+    Console.WriteLine($"my_list[{i}] = {elem}");
+}
+
+Console.WriteLine("\n4. список после изменения элемента с индексом 4 (на 99):");
+await client.PutAsJsonAsync("api/list/element/4", 99);
+list = await client.GetFromJsonAsync<List<int>>("api/list");
+PrintList(list);
+
+Console.WriteLine("\n5. элементы с индексами с 3 по 7 (не включая 7):");
+var slice = await client.GetFromJsonAsync<List<int>>("api/list/slice?start=3&end=7");
+PrintList(slice);
+
+Console.WriteLine("\n6. список после добавления элемента 42 в конец:");
+await client.PostAsJsonAsync("api/list/append", 42);
+list = await client.GetFromJsonAsync<List<int>>("api/list");
+PrintList(list);
+
+Console.WriteLine("\n7. список после добавления элемента 777 в середину:");
+await client.PostAsJsonAsync("api/list/insert/mid", 777);
+list = await client.GetFromJsonAsync<List<int>>("api/list");
+PrintList(list);
+
+Console.WriteLine("\n8. количество элементов со значением 7:");
+var count7 = await client.GetFromJsonAsync<int>("api/list/count/7");
+Console.WriteLine(count7);
+
+Console.WriteLine("\n9. сравнение оригинального и изменённого скопированного списка:");
+await client.PostAsync("api/list/copy", null);
+await client.PutAsJsonAsync("api/list/copied/element/0", 1000);
+var compareResult = await client.GetFromJsonAsync<CompareResult>("api/list/compare");
+Console.WriteLine("оригинальный список: " + JsonSerializer.Serialize(compareResult.Original));
+Console.WriteLine("скопированный список с изменённым первым элементом: " + JsonSerializer.Serialize(compareResult.Copy));
+Console.WriteLine("равны ли списки? " + compareResult.Equal);
+
+static void PrintList(List<int>? list)
+{
+    if (list == null) return;
+    Console.WriteLine(string.Join(", ", list));
+}
+
+public class CompareResult
+{
+    public bool Equal { get; set; }
+    public List<int>? Original { get; set; }
+    public List<int>? Copy { get; set; }
+}
