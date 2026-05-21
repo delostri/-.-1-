@@ -1,0 +1,78 @@
+
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+var originalList = new List<int> { 3, 7, 2, 7, 9, 2, 1, 7, 5, 8 };
+List<int>? copiedList = null;
+
+app.MapGet("/api/list", () => originalList);
+
+app.MapGet("/api/list/prelast", () =>
+{
+    if (originalList.Count < 2) return Results.NotFound(new { error = "Список содержит менее 2 элементов" });
+    return Results.Ok(originalList[^2]);
+});
+
+app.MapGet("/api/list/element/{index:int}", (int index) =>
+{
+    if (index < 0 || index >= originalList.Count) return Results.NotFound(new { error = "Индекс вне диапазона" });
+    return Results.Ok(originalList[index]);
+});
+
+app.MapGet("/api/list/slice", (int start, int end) =>
+{
+    if (start < 0 || end > originalList.Count || start > end) return Results.BadRequest(new { error = "Некорректные границы среза" });
+    var slice = originalList.Skip(start).Take(end - start).ToList();
+    return Results.Ok(slice);
+});
+
+app.MapPut("/api/list/element/{index:int}", (int index, int newValue) =>
+{
+    if (index < 0 || index >= originalList.Count) return Results.NotFound(new { error = "Индекс вне диапазона" });
+    originalList[index] = newValue;
+    return Results.Ok(originalList[index]);
+});
+
+app.MapPost("/api/list/append", (int value) =>
+{
+    originalList.Add(value);
+    return Results.Ok(originalList);
+});
+
+app.MapPost("/api/list/insert/mid", (int value) =>
+{
+    int mid = originalList.Count / 2;
+    originalList.Insert(mid, value);
+    return Results.Ok(originalList);
+});
+
+app.MapGet("/api/list/count/{value:int}", (int value) =>
+{
+    int count = originalList.Count(v => v == value);
+    return Results.Ok(count);
+});
+
+app.MapPost("/api/list/copy", () =>
+{
+    copiedList = new List<int>(originalList);
+    return Results.Ok(new { message = "Копия создана", copy = copiedList });
+});
+
+app.MapPut("/api/list/copied/element/{index:int}", (int index, int newValue) =>
+{
+    if (copiedList == null) return Results.BadRequest(new { error = "Копия не была создана" });
+    if (index < 0 || index >= copiedList.Count) return Results.NotFound(new { error = "Индекс вне диапазона в копии" });
+    copiedList[index] = newValue;
+    return Results.Ok(copiedList[index]);
+});
+
+app.MapGet("/api/list/compare", () =>
+{
+    if (copiedList == null) return Results.BadRequest(new { error = "Копия не была создана" });
+    bool areEqual = originalList.SequenceEqual(copiedList);
+    return Results.Ok(new { equal = areEqual, original = originalList, copy = copiedList });
+});
+
+app.MapGet("/api/list/length", () => originalList.Count);
+
+app.Run();
