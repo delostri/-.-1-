@@ -1,0 +1,68 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http.Json;
+using System.Xml.Linq;
+
+int id = 1;
+
+List<Person> users = new List<Person>
+{
+new() { Id = id++, Name = "Иванов", Age = 18 },
+new() { Id = id++, Name = "Кузнецов", Age = 18 },
+new() { Id = id++, Name = "Смоленцева", Age = 18 },
+new() { Id = id++, Name = "Давлетханов", Age = 18 },
+new() { Id = id++, Name = "Корбен Даллас", Age = 18 },
+new() { Id = id++, Name = "Камальдинов", Age = 18 },
+new() { Id = id++, Name = "Кардашин", Age = 18 },
+new() { Id = id++, Name = "Пахтин", Age = 18 },
+new() { Id = id++, Name = "Проскуряков", Age = 18 },
+new() { Id = id++, Name = "Краснюков", Age = 18 },
+};
+
+var builder = WebApplication.CreateBuilder();
+var app = builder.Build();
+app.MapGet("/api/users", () => users);
+
+app.MapGet("/api/users/{id}", (int id) =>
+{
+    Person? user = users.FirstOrDefault(u => u.Id == id);
+    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+    return Results.Json(user);
+});
+
+app.MapDelete("/api/users/{id}", (int id) =>
+{
+    Person? user = users.FirstOrDefault(u => u.Id == id);
+    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+    users.Remove(user);
+    return Results.Json(user);
+});
+
+app.MapPost("/api/users", (Person user) =>
+{
+    user.Id = id++;
+    users.Add(user);
+    return user;
+});
+
+app.MapPut("/api/users", (Person userData) =>
+{
+    var user = users.FirstOrDefault(u => u.Id == userData.Id);
+    if (user == null) return Results.NotFound(new { message = "Пользователь не найден" });
+    user.Age = userData.Age;
+    user.Name = userData.Name;
+    return Results.Json(user);
+});
+
+app.Run();
+
+public class Person
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public int Age { get; set; }
+}
